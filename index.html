@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Chat</title>
+  <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-database.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #chatbox { width: 300px; height: 400px; border: 1px solid #000; overflow-y: scroll; margin-bottom: 10px; }
+    #messageInput { width: 200px; }
+    #sendMessage { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Simple Group Chat</h1>
+  
+  <div id="chatbox"></div>
+  
+  <input type="text" id="messageInput" placeholder="Enter your message">
+  <button id="sendMessage">Send</button>
+
+  <script>
+    // Your Firebase configuration here
+    var firebaseConfig = {
+      apiKey: "AIzaSyCJr4azcbZE78htsi6sxi0DUp7Ob0-j4WQ",
+      authDomain: "group-chat-projet.firebaseapp.com",
+      databaseURL: "https://your-project-id.firebaseio.com",
+      projectId: "group-chat-projet",
+      storageBucket: "group-chat-projet.appspot.com",
+      messagingSenderId: "704671050064",
+      appId: "1:704671050064:web:c3e888846bffe1801d2455"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Reference to the database
+    var messagesRef = firebase.database().ref("messages");
+
+    // Send message
+    document.getElementById("sendMessage").onclick = function() {
+      var message = document.getElementById("messageInput").value;
+      if (message !== "") {
+        messagesRef.push().set({
+          message: message,
+          timestamp: new Date().toLocaleTimeString()
+        });
+        document.getElementById("messageInput").value = "";
+      }
+    };
+
+    // Display messages
+    messagesRef.on("child_added", function(snapshot) {
+      var chatbox = document.getElementById("chatbox");
+      var messageData = snapshot.val();
+      var messageElement = document.createElement("p");
+      messageElement.textContent = messageData.timestamp + ": " + messageData.message;
+      chatbox.appendChild(messageElement);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
